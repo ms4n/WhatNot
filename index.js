@@ -16,8 +16,11 @@ const headers = {
 const data = {
   messaging_product: "whatsapp",
   to: RECEIVER_PHONE_NUMBER,
-  type: "template",
-  template: { name: "hello_world", language: { code: "en_US" } },
+  type: "text",
+  text: {
+    preview_url: false,
+    body: "This a custom text message",
+  },
 };
 
 axios
