@@ -4,7 +4,7 @@ app.use(express.json());
 const axios = require("axios");
 require("dotenv").config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const access_token = process.env.ACCESS_TOKEN;
 const webhook_token = process.env.WEBHOOK_TOKEN;
 
@@ -12,7 +12,7 @@ app.listen(port, () => {
   console.log(`Webhook listening on port ${port}`);
 });
 
-app.get("/", (req, res) => {
+app.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const challenge = req.query["hub.challenge"];
   const token = req.query["hub.verify_token"];
@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
   }
 });
 
-app.post("/", (req, res) => {
+app.post("/webhook", (req, res) => {
   const body_param = req.body;
   console.log(JSON.stringify(body_param, null, 2));
 
@@ -60,4 +60,8 @@ app.post("/", (req, res) => {
   } else {
     res.sendStatus(404);
   }
+});
+
+app.get("/", (req, res) => {
+  res.status(200).send("Webhook listening");
 });
