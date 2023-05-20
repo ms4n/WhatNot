@@ -41,13 +41,19 @@ app.post("/webhook", (req, res) => {
     const message_body =
       body_param.entry[0].changes[0].value.messages[0].text.body;
 
+    let responseMessage = `Hello, responding from webhook, your message was ${message_body}`;
+
+    if (message_body.toLowerCase().includes("sanjay")) {
+      responseMessage = "Sanjay is my developer!";
+    }
+
     axios.post(
       `https://graph.facebook.com/v16.0/${phone_no_id}/messages?access_token=${access_token}`,
       {
         messaging_product: "whatsapp",
         to: from_phone_no,
         text: {
-          body: `Hello, responding from webhook, your message was ${message_body}`,
+          body: responseMessage,
         },
       },
       {
