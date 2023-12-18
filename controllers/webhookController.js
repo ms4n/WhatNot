@@ -19,7 +19,7 @@ async function processMessage(body) {
     const responseMessage = messageController.getResponseMessage(message_body);
 
     await axios.post(
-      `https://graph.facebook.com/v16.0/${phone_no_id}/messages?access_token=${access_token}`,
+      `https://graph.facebook.com/v17.0/${phone_no_id}/messages?access_token=${access_token}`,
       {
         messaging_product: "whatsapp",
         to: from_phone_no,
