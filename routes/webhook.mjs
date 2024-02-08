@@ -1,7 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const webhookController = require("../controllers/webhookController");
-require("dotenv").config();
+import { Router } from "express";
+const router = Router();
+import webhookController from "../controllers/webhookController.mjs";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const webhook_token = process.env.WEBHOOK_TOKEN;
 
@@ -27,4 +29,4 @@ router.post("/webhook", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

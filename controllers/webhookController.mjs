@@ -1,6 +1,8 @@
-const axios = require("axios");
-const messageController = require("./messageController");
-require("dotenv").config();
+import { Axios } from "axios";
+import messageController from "./messageController.mjs";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const access_token = process.env.ACCESS_TOKEN;
 
@@ -18,7 +20,7 @@ async function processMessage(body) {
 
     const responseMessage = messageController.getResponseMessage(message_body);
 
-    await axios.post(
+    await Axios.post(
       `https://graph.facebook.com/v17.0/${phone_no_id}/messages?access_token=${access_token}`,
       {
         messaging_product: "whatsapp",
@@ -36,4 +38,4 @@ async function processMessage(body) {
   }
 }
 
-module.exports = { processMessage };
+export default { processMessage };
