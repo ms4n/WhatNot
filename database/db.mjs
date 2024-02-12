@@ -26,15 +26,25 @@ const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
 const validateOTP = async (phoneNumber, userOTP) => {
   const { data, error } = await supabase
     .from("OTP")
-    .select("otp_code")
+    .select("otp_code, otp_expiration_time")
     .eq("phone_number", phoneNumber);
 
   if (error) {
     console.error("Error retrieving OTP:", error.message);
-    throw new Error("Failed to retrieve OTP");
+    throw new Error("Failed to retrieve OTP data: " + error.message);
   }
 
-  return data && data.length > 0 && data[0].otp_code === userOTP;
+  // Check if data exists and has at least one entry
+  if (data && data.length > 0) {
+    const otpExpirationTime = new Date(data[0].otp_expiration_time);
+    const currentTime = new Date();
+
+    if (otpExpirationTime > currentTime) {
+      return data[0].otp_code === userOTP;
+    }
+  }
+
+  return false; // OTP validation failed or no OTP data found
 };
 
 const saveAccessToken = async (phoneNumber, accessToken) => {

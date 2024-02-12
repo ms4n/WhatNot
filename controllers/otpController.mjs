@@ -55,12 +55,13 @@ const handleOTPGeneration = async (phoneNumber) => {
   }
 };
 
-const handleOTPValidation = (phoneNumber, userOTP) => {
-  const isValid = otpServices.validateOTP(phoneNumber, userOTP);
+const handleOTPValidation = async (phoneNumber, userOTP) => {
+  const isValid = await otpServices.validateOTP(phoneNumber, userOTP);
+
   if (isValid) {
-    return { message: "OTP validation successful" };
+    return { message: "OTP validation successful", valid: true };
   } else {
-    return { message: "Invalid OTP. Please try again." };
+    return { message: "Invalid OTP. Please try again.", valid: false };
   }
 };
 

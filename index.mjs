@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 app.use(json());
 
 app.use("/", webhookRoutes);
-app.use("/auth", otpRoutes);
+app.use("/api", otpRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

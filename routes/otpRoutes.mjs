@@ -5,7 +5,7 @@ import otpController from "../controllers/otpController.mjs";
 const router = express.Router();
 
 // Endpoint to generate OTP
-router.post("/generate-otp", async (req, res) => {
+router.post("/auth/generate-otp", async (req, res) => {
   const { phoneNumber } = req.body;
 
   try {
@@ -18,11 +18,14 @@ router.post("/generate-otp", async (req, res) => {
 });
 
 // Endpoint to validate OTP
-router.post("/validate-otp", (req, res) => {
+router.post("/auth/validate-otp", async (req, res) => {
   const { phoneNumber, userOTP } = req.body;
 
   try {
-    const result = otpController.handleOTPValidation(phoneNumber, userOTP);
+    const result = await otpController.handleOTPValidation(
+      phoneNumber,
+      userOTP
+    );
     res.json({ data: result });
   } catch (error) {
     console.error("Error validating OTP:", error.message);
