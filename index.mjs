@@ -1,10 +1,18 @@
 import express, { json } from "express";
-const app = express();
+import cors from "cors";
+
 import webhookRoutes from "./routes/webhook.mjs";
 import otpRoutes from "./routes/otpRoutes.mjs";
-const port = process.env.PORT || 3000;
+
+const app = express();
+const port = process.env.PORT || 8000;
 
 app.use(json());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "https://whatnotapp.vercel.app/"],
+  })
+);
 
 app.use("/", webhookRoutes);
 app.use("/api", otpRoutes);
