@@ -10,7 +10,7 @@ const port = process.env.PORT || 8000;
 app.use(json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://whatnotapp.vercel.app/"],
+    origin: ["http://localhost:3000", "https://whatnotapp.vercel.app"],
   })
 );
 
