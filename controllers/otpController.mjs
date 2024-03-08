@@ -1,6 +1,7 @@
 import otpServices from "../services/otpServices.mjs";
 import Axios from "axios";
 import dotenv from "dotenv";
+import { saveVerifiedPhoneNumber } from "../database/db.mjs";
 
 dotenv.config();
 
@@ -59,7 +60,14 @@ const handleOTPValidation = async (phoneNumber, userOTP) => {
   const isValid = await otpServices.validateOTP(phoneNumber, userOTP);
 
   if (isValid) {
-    return { message: "OTP validation successful", valid: true };
+    try {
+      await saveVerifiedPhoneNumber(phoneNumber);
+      return { message: "OTP validation successful", valid: true };
+    } catch (error) {
+      console.error(error);
+      // If saveVerifiedPhoneNumber throws an error, return nothing
+      return;
+    }
   } else {
     return { message: "Invalid OTP. Please try again.", valid: false };
   }
