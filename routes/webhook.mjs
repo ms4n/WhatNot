@@ -1,7 +1,7 @@
 import { Router } from "express";
 const router = Router();
-import webhookController from "../controllers/webhookController.mjs";
-import dotenv from 'dotenv';
+import webhookController from "../controllers/whatsapp/webhookController.mjs";
+import dotenv from "dotenv";
 
 dotenv.config();
 

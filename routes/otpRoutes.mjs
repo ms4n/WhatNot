@@ -1,6 +1,6 @@
 // otpRoutes.mjs
 import express from "express";
-import otpController from "../controllers/otpController.mjs";
+import otpController from "../controllers/auth/otpController.mjs";
 
 const router = express.Router();
 

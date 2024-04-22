@@ -16,9 +16,9 @@ const generateAndSaveOTP = (phoneNumber) => {
   return OTP;
 };
 
-const otpServices = {
+const otpService = {
   generateAndSaveOTP,
   validateOTP,
 };
 
-export default otpServices;
+export default otpService;

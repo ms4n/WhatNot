@@ -14,8 +14,8 @@ const oauth2Client = new google.auth.OAuth2(
 );
 
 const scopes = [
-  "https://www.googleapis.com/auth/documents",
-  "https://www.googleapis.com/auth/userinfo.email",
+  "https://www.googleapis.com/auth/drive.file",
+  "https://www.googleapis.com/auth/calendar.events",
 ];
 
 export function generateAuthUrl() {

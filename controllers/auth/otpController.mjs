@@ -1,7 +1,7 @@
-import otpServices from "../services/otpServices.mjs";
+import otpService from "../../services/otpService.mjs";
 import Axios from "axios";
 import dotenv from "dotenv";
-import { saveVerifiedPhoneNumber } from "../database/db.mjs";
+import { saveVerifiedPhoneNumber } from "../../database/db.mjs";
 
 dotenv.config();
 
@@ -9,7 +9,7 @@ const access_token = process.env.ACCESS_TOKEN;
 const phone_no_id = process.env.PHONE_NUMBER_ID;
 
 const handleOTPGeneration = async (phoneNumber) => {
-  const OTP = otpServices.generateAndSaveOTP(phoneNumber);
+  const OTP = otpService.generateAndSaveOTP(phoneNumber);
   const otpMessage = `Your one-time password (OTP) for Whatnot signup is: ${OTP}. This OTP is valid for 5 minutes.`;
 
   try {
@@ -57,7 +57,7 @@ const handleOTPGeneration = async (phoneNumber) => {
 };
 
 const handleOTPValidation = async (phoneNumber, userOTP) => {
-  const isValid = await otpServices.validateOTP(phoneNumber, userOTP);
+  const isValid = await otpService.validateOTP(phoneNumber, userOTP);
 
   if (isValid) {
     try {
@@ -65,8 +65,10 @@ const handleOTPValidation = async (phoneNumber, userOTP) => {
       return { message: "OTP validation successful", valid: true };
     } catch (error) {
       console.error(error);
-      // If saveVerifiedPhoneNumber throws an error, return nothing
-      return;
+      return {
+        message: "Error validating OTP, please try again.",
+        valid: false,
+      };
     }
   } else {
     return { message: "Invalid OTP. Please try again.", valid: false };

@@ -1,9 +1,11 @@
-import axios from "axios";
 import {
   generateAuthUrl,
   getAuthTokens,
-} from "../services/googleAuthServices.mjs";
-import { checkVerifiedPhoneNumber, saveGoogleTokens } from "../database/db.mjs";
+} from "../../services/googleAuthService.mjs";
+import {
+  checkVerifiedPhoneNumber,
+  saveGoogleTokens,
+} from "../../database/db.mjs";
 
 async function handleOAuthCallback(req, res) {
   try {

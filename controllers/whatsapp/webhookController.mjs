@@ -1,4 +1,4 @@
-import { Axios } from "axios";
+import axios from "axios";
 import messageController from "./messageController.mjs";
 import dotenv from "dotenv";
 
@@ -14,13 +14,14 @@ async function processMessage(body) {
     body.entry[0].changes[0].value.messages &&
     body.entry[0].changes[0].value.messages[0]
   ) {
+    console.log(body.entry[0].changes[0].value.messages[0]);
     const phone_no_id = body.entry[0].changes[0].value.metadata.phone_number_id;
     const from_phone_no = body.entry[0].changes[0].value.messages[0].from;
     const message_body = body.entry[0].changes[0].value.messages[0].text.body;
 
     const responseMessage = messageController.getResponseMessage(message_body);
 
-    await Axios.post(
+    await axios.post(
       `https://graph.facebook.com/v17.0/${phone_no_id}/messages?access_token=${access_token}`,
       {
         messaging_product: "whatsapp",
