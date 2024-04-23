@@ -1,5 +1,6 @@
 import { supabase } from "./supabase.mjs";
 import { encryptToken, decryptToken } from "../utils/tokenUtils.mjs";
+import oauth2Client from "../config/googleOauthConfig.mjs";
 
 const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
   try {
@@ -151,8 +152,7 @@ const fetchGoogleAccessToken = async (phoneNumber) => {
       .single();
 
     if (error) {
-      console.error("Error fetching Google Access tokens:", error.message);
-      throw new Error("Failed to fetch access token: " + error.message);
+      throw new Error("Failed to fetch Google Access token: " + error.message);
     }
 
     if (!data) {
@@ -165,9 +165,12 @@ const fetchGoogleAccessToken = async (phoneNumber) => {
         data.google_access_token_iv
       );
       return decryptedAccessToken;
+    } else {
+      return renewGoogleAccessToken(phoneNumber);
     }
   } catch (error) {
-    console.error("Error fetching Google Access tokens:", error.message);
+    console.error("Error fetching Google Access token:", error.message);
+    throw error;
   }
 };
 
@@ -180,23 +183,41 @@ const renewGoogleAccessToken = async (phoneNumber) => {
       .single();
 
     if (error) {
-      console.error("Error fetching Google Refresh tokens:", error.message);
-      throw new Error("Failed to fetch Refresh token: " + error.message);
+      throw new Error("Failed to fetch Google Refresh token: " + error.message);
     }
 
     if (!data) {
       throw new Error("Refresh token data not found");
     }
 
-    if (data.google_access_token_expiry_date > Date.now()) {
-      const decryptedRefreshToken = decryptToken(
-        data.google_refresh_token_encrypted,
-        data.google_refresh_token_iv
-      );
-      return decryptedRefreshToken;
+    const decryptedRefreshToken = decryptToken(
+      data.google_refresh_token_encrypted,
+      data.google_refresh_token_iv
+    );
+
+    oauth2Client.setCredentials({ refresh_token: decryptedRefreshToken });
+
+    const { tokens, error: refreshError } = await new Promise((resolve) => {
+      oauth2Client.refreshAccessToken((err, tokens) => {
+        if (err) {
+          console.error("Error refreshing access token:", err);
+          resolve({ error: err });
+        } else {
+          resolve({ tokens });
+        }
+      });
+    });
+
+    if (refreshError) {
+      throw new Error("Error refreshing access token: " + refreshError.message);
     }
+
+    await saveGoogleTokens(phoneNumber, tokens);
+
+    return tokens.access_token;
   } catch (error) {
     console.error("Error renewing Google Access tokens:", error.message);
+    throw error;
   }
 };
 
@@ -206,4 +227,6 @@ export {
   saveGoogleTokens,
   saveVerifiedPhoneNumber,
   checkVerifiedPhoneNumber,
+  fetchGoogleAccessToken,
+  renewGoogleAccessToken,
 };
