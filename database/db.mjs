@@ -1,6 +1,16 @@
+// db.mjs
+
+// Database functions for managing OTP, user data, and Google OAuth tokens
+
 import { supabase } from "./supabase.mjs";
 import { encryptToken, decryptToken } from "../utils/tokenUtils.mjs";
 import oauth2Client from "../config/googleOauthConfig.mjs";
+
+// Save OTP (One-Time Password) for a given phone number with expiration time
+// Parameters:
+// - phoneNumber: Phone number for which OTP is being saved
+// - otp: OTP code to be saved
+// - otpExpirationTime: Expiration time for the OTP
 
 const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
   try {
@@ -30,6 +40,11 @@ const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
   }
 };
 
+// Validate OTP (One-Time Password) for a given phone number
+// Parameters:
+// - phoneNumber: Phone number for which OTP is being validated
+// - userOTP: OTP code entered by the user
+// Returns: Boolean indicating whether the OTP is valid
 const validateOTP = async (phoneNumber, userOTP) => {
   try {
     const { data, error } = await supabase
@@ -59,6 +74,9 @@ const validateOTP = async (phoneNumber, userOTP) => {
   }
 };
 
+// Save otp verified phone number to the database
+// Parameters:
+// - phoneNumber: Phone number to be saved as verified
 const saveVerifiedPhoneNumber = async (phoneNumber) => {
   try {
     const { data, error } = await supabase
@@ -80,6 +98,10 @@ const saveVerifiedPhoneNumber = async (phoneNumber) => {
   }
 };
 
+// Check if a phone number is verified
+// Parameters:
+// - phoneNumber: Phone number to check for verification
+// Returns: Boolean indicating whether the phone number is verified
 const checkVerifiedPhoneNumber = async (phoneNumber) => {
   try {
     const { data, error } = await supabase
@@ -100,6 +122,10 @@ const checkVerifiedPhoneNumber = async (phoneNumber) => {
   }
 };
 
+// Save Encrypted Google OAuth tokens to the database
+// Parameters:
+// - phoneNumber: Phone number associated with the tokens
+// - tokens: Google OAuth tokens to be saved
 const saveGoogleTokens = async (phoneNumber, tokens) => {
   try {
     const encryptedAccessToken = tokens.access_token
@@ -141,6 +167,10 @@ const saveGoogleTokens = async (phoneNumber, tokens) => {
   }
 };
 
+// Fetch Google Access Token for a given phone number, renews the access token if it's expired
+// Parameters:
+// - phoneNumber: Phone number associated with the access token
+// Returns: Working Google Access Token
 const fetchGoogleAccessToken = async (phoneNumber) => {
   try {
     const { data, error } = await supabase
@@ -174,6 +204,10 @@ const fetchGoogleAccessToken = async (phoneNumber) => {
   }
 };
 
+// Renew Google Access Token for a given phone number
+// Parameters:
+// - phoneNumber: Phone number associated with the access token
+// Returns: New Google Access Token
 const renewGoogleAccessToken = async (phoneNumber) => {
   try {
     const { data, error } = await supabase
@@ -230,3 +264,5 @@ export {
   fetchGoogleAccessToken,
   renewGoogleAccessToken,
 };
+
+//TODO: implementing caching for access tokens
