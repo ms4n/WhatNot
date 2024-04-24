@@ -1,3 +1,4 @@
+import axios from "axios";
 import mime from "mime-types";
 
 import dotenv from "dotenv";
@@ -6,7 +7,18 @@ dotenv.config();
 const WHATSAPP_API_ACCESS_TOKEN = process.env.ACCESS_TOKEN;
 const parentFolderName = "WhatNot App";
 
-import driveService from "../../config/googlAPIconfig.mjs";
+import { getDriveService } from "../../config/googleApiConfig.mjs";
+
+let driveService;
+
+async function initializeDriveService(phoneNumber) {
+  try {
+    driveService = await getDriveService(phoneNumber);
+  } catch (error) {
+    console.error("Error initializing Drive service:", error);
+    throw error;
+  }
+}
 
 async function findFolder(folderName, parentFolderId = undefined) {
   folderName = folderName.replace(/'/g, "\\'");
@@ -24,11 +36,8 @@ async function findFolder(folderName, parentFolderId = undefined) {
     });
 
     const files = res.data.files;
-
     const folderId = files.length > 0 ? files[0].id : null;
-    console.log(
-      folderId !== null ? `Folder Found! ${folderId}` : "No folders found!"
-    );
+
     return folderId;
   } catch (err) {
     console.error(err);
@@ -50,7 +59,6 @@ async function createFolder(folderName, parentFolderId = undefined) {
       resource: fileMetadata,
       fields: "id",
     });
-    console.log("Folder Id:", file.data.id);
     return file.data.id;
   } catch (err) {
     console.error(err.errors);
@@ -66,7 +74,7 @@ async function findOrCreateFolder(folderName, parentFolderId = undefined) {
   return folderId;
 }
 
-async function handleWhatsAppMediaUpload(messageObject) {
+async function handleWhatsAppMediaUpload(messageObject, phoneNumber) {
   try {
     if (!messageObject.url) {
       console.error("No media URL found in the message.");
@@ -108,5 +116,8 @@ async function handleWhatsAppMediaUpload(messageObject) {
     });
   } catch (err) {
     console.error("Whatsapp Media download and upload to Drive Error: ", err);
+    throw err;
   }
 }
+
+export { initializeDriveService, handleWhatsAppMediaUpload };
