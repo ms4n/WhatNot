@@ -38,12 +38,19 @@ async function handleTextMessage(message) {
 }
 
 async function handleMediaMessage(message) {
+  const mediaType = message.type;
+  const mediaId = message[mediaType].id;
   try {
     await initializeDriveService(message.from);
-    const mediaObject = await getMediaObjectFromId(message.image.id);
+    const mediaObject = await getMediaObjectFromId(mediaId);
 
-    await handleWhatsAppMediaUpload(mediaObject);
-    const responseMessage = `Uploaded to Google Drive!`;
+    await handleWhatsAppMediaUpload(
+      mediaObject,
+      mediaType,
+      mediaType === "document" ? message.document.filename : undefined
+    );
+
+    const responseMessage = `Media uploaded to Google Drive`;
     return responseMessage;
   } catch (error) {
     console.error(error);

@@ -15,7 +15,6 @@ async function processMessage(body) {
     body.entry[0].changes[0].value.messages[0]
   ) {
     const messageObject = body.entry[0].changes[0].value.messages[0];
-    console.log(messageObject);
 
     const phoneNumberId =
       body.entry[0].changes[0].value.metadata.phone_number_id;
@@ -54,7 +53,7 @@ export default { processMessage };
 //   type: 'text'
 // }
 
-//Example Image Media Message Object
+// Example Image Media Message Object
 
 // {
 //   from: '917892763027',
@@ -68,7 +67,7 @@ export default { processMessage };
 //   }
 // }
 
-//Example Document Media Message Object
+// Example Document Media Message Object
 
 // {
 //   from: '917892763027',
@@ -83,7 +82,7 @@ export default { processMessage };
 //   }
 // }
 
-////Example Audio Media Message Object
+// //Example Audio Media Message Object
 
 // {
 //   from: '917892763027',
@@ -98,7 +97,7 @@ export default { processMessage };
 //   }
 // }
 
-//Example Video Media Message Object
+// Example Video Media Message Object
 
 // {
 //   from: '917892763027',

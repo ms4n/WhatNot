@@ -74,33 +74,37 @@ async function findOrCreateFolder(folderName, parentFolderId = undefined) {
   return folderId;
 }
 
-async function handleWhatsAppMediaUpload(messageObject, phoneNumber) {
+async function handleWhatsAppMediaUpload(
+  mediaObject,
+  mediaType,
+  fileName = undefined
+) {
   try {
-    if (!messageObject.url) {
+    if (!mediaObject.url) {
       console.error("No media URL found in the message.");
       return;
     }
 
-    const whatsappMediaResponse = await axios.get(messageObject.url, {
+    const whatsappMediaResponse = await axios.get(mediaObject.url, {
       responseType: "stream",
       headers: {
         Authorization: `Bearer ${WHATSAPP_API_ACCESS_TOKEN}`,
       },
     });
 
-    const mimeType = messageObject.mime_type;
+    const mimeType = mediaObject.mime_type;
 
-    const fileName = `${messageObject.id.substring(0, 5)}.${mime.extension(
-      mimeType
-    )}`;
+    const finalFileName = fileName
+      ? fileName
+      : `${mediaObject.id.substring(0, 5)}.${mime.extension(mimeType)}`;
 
-    const subFolderName = `${mimeType.split("/")[0]} files`;
+    const subFolderName = `${mediaType} files`;
 
     const parentFolderId = await findOrCreateFolder(parentFolderName);
     const subFolderId = await findOrCreateFolder(subFolderName, parentFolderId);
 
     const fileMetadata = {
-      name: fileName,
+      name: finalFileName,
       parents: [subFolderId],
     };
 
