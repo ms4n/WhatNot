@@ -16,6 +16,8 @@ async function processMessage(body) {
   ) {
     const messageObject = body.entry[0].changes[0].value.messages[0];
 
+    console.log(body.entry[0].changes[0].value);
+
     const phoneNumberId =
       body.entry[0].changes[0].value.metadata.phone_number_id;
     const fromPhoneNumber = body.entry[0].changes[0].value.messages[0].from;
