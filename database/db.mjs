@@ -250,7 +250,7 @@ const renewGoogleAccessToken = async (phoneNumber) => {
 
     return tokens.access_token;
   } catch (error) {
-    console.error("Error renewing Google Access tokens:", error.message);
+    console.error("Error renewing Google Access tokens:", error.data);
     throw error;
   }
 };

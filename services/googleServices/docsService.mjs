@@ -12,7 +12,7 @@ async function initializeDocsService(phoneNumber) {
   }
 }
 
-async function writeMessageToDocs(message) {
+async function writeMessageToDocs(message, timestamp) {
   const fileMetadata = {
     name: "Whatsapp NoteSync",
     mimeType: "application/vnd.google-apps.document",
@@ -22,7 +22,7 @@ async function writeMessageToDocs(message) {
 
   console.log(docFile);
 
-  const date = new Date(); // Get the current date and time
+  const date = new Date(timestamp * 1000);
   const formattedDate = date.toLocaleDateString("en-us", {
     weekday: "long",
     year: "numeric",

@@ -34,6 +34,7 @@ function getResponseMessage(message) {
 async function handleTextMessage(message) {
   const text = message.text.body;
   const fromPhoneNumber = message.from;
+  const timestamp = message.timestamp;
 
   if (text === "Hello! 👋") {
     return RESPONSE_MESSAGES.WELCOME_LINK;
@@ -44,7 +45,7 @@ async function handleTextMessage(message) {
       await initializeDriveService(fromPhoneNumber);
       await initializeDocsService(fromPhoneNumber);
 
-      await writeMessageToDocs(text);
+      await writeMessageToDocs(text, timestamp);
       return RESPONSE_MESSAGES.DEFAULT;
     } catch (error) {}
   }
