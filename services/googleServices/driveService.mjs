@@ -4,7 +4,7 @@ import mime from "mime-types";
 import dotenv from "dotenv";
 dotenv.config();
 
-const WHATSAPP_API_ACCESS_TOKEN = process.env.ACCESS_TOKEN;
+const WHATSAPP_API_ACCESS_TOKEN = process.env.WHATSAPP_API_ACCESS_TOKEN;
 const parentFolderName = "WhatNot App";
 
 import { getDriveService } from "../../config/googleApiConfig.mjs";

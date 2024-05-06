@@ -1,10 +1,4 @@
-import axios from "axios";
 import messageController from "./messageController.mjs";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const access_token = process.env.ACCESS_TOKEN;
 
 async function processMessage(body) {
   if (
@@ -16,28 +10,7 @@ async function processMessage(body) {
   ) {
     const messageObject = body.entry[0].changes[0].value.messages[0];
 
-    const phoneNumberId =
-      body.entry[0].changes[0].value.metadata.phone_number_id;
-    const fromPhoneNumber = body.entry[0].changes[0].value.messages[0].from;
-
-    const responseMessage =
-      await messageController.getResponseMessage(messageObject);
-
-    await axios.post(
-      `https://graph.facebook.com/v17.0/${phoneNumberId}/messages?access_token=${access_token}`,
-      {
-        messaging_product: "whatsapp",
-        to: fromPhoneNumber,
-        text: {
-          body: responseMessage,
-        },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    await messageController.handleIncomingMessage(messageObject);
   }
 }
 

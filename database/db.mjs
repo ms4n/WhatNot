@@ -29,7 +29,7 @@ const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
     );
 
     if (error) {
-      console.error("Error saving OTP:", error.message);
+      console.error("Error saving OTP:", error);
       throw new Error("Failed to save OTP");
     }
 
@@ -39,6 +39,8 @@ const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
     throw error;
   }
 };
+
+await saveOTP("897149749907", "961961", 1714986711177);
 
 // Validate OTP (One-Time Password) for a given phone number
 // Parameters:
@@ -255,14 +257,14 @@ const renewGoogleAccessToken = async (phoneNumber) => {
   }
 };
 
-export {
-  saveOTP,
-  validateOTP,
-  saveGoogleTokens,
-  saveVerifiedPhoneNumber,
-  checkVerifiedPhoneNumber,
-  fetchGoogleAccessToken,
-  renewGoogleAccessToken,
-};
+// export {
+//   saveOTP,
+//   validateOTP,
+//   saveGoogleTokens,
+//   saveVerifiedPhoneNumber,
+//   checkVerifiedPhoneNumber,
+//   fetchGoogleAccessToken,
+//   renewGoogleAccessToken,
+// };
 
 //TODO: implementing caching for access tokens

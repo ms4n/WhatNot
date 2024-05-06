@@ -1,4 +1,7 @@
-import { getMediaObjectFromId } from "../../utils/whatsappUtils.mjs";
+import {
+  getMediaObjectFromId,
+  sendReactionMessage,
+} from "../../utils/whatsappUtils.mjs";
 import {
   initializeDriveService,
   handleWhatsAppMediaUpload,
@@ -17,7 +20,7 @@ const RESPONSE_MESSAGES = {
     "Hello! 👋 Welcome to Whatnot! To get started, please sign up here: https://whatnotapp.vercel.app/signup. We're excited to have you on board!",
 };
 
-function getResponseMessage(message) {
+async function handleIncomingMessage(message) {
   switch (message.type) {
     case "text":
       return handleTextMessage(message);
@@ -27,7 +30,7 @@ function getResponseMessage(message) {
     case "video":
       return handleMediaMessage(message);
     default:
-      return RESPONSE_MESSAGES.DEFAULT;
+      return handleDefaultMessage(message);
   }
 }
 
@@ -35,19 +38,25 @@ async function handleTextMessage(message) {
   const text = message.text.body;
   const fromPhoneNumber = message.from;
   const timestamp = message.timestamp;
+  const messageId = message.id;
 
   if (text === "Hello! 👋") {
     return RESPONSE_MESSAGES.WELCOME_LINK;
-  } else if (text.includes("goodbye")) {
-    return RESPONSE_MESSAGES.GOODBYE;
   } else {
     try {
       await initializeDriveService(fromPhoneNumber);
       await initializeDocsService(fromPhoneNumber);
 
-      await writeMessageToDocs(text, timestamp);
-      return RESPONSE_MESSAGES.DEFAULT;
-    } catch (error) {}
+      const docsResposne = await writeMessageToDocs(text, timestamp);
+      if (docsResposne === 200) {
+        await sendReactionMessage(fromPhoneNumber, messageId);
+      }
+    } catch (error) {
+      console.error(
+        "Error occurred while attempting to send reply message to WhatsApp:",
+        error
+      );
+    }
   }
 }
 
@@ -73,4 +82,6 @@ async function handleMediaMessage(message) {
   }
 }
 
-export default { getResponseMessage };
+async function handleDefaultMessage(message) {}
+
+export default { handleIncomingMessage };

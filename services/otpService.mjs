@@ -1,6 +1,6 @@
 import { saveOTP, validateOTP } from "../database/db.mjs";
 
-const generateAndSaveOTP = (phoneNumber) => {
+const generateAndSaveOTP = async (phoneNumber) => {
   const digits = "0123456789"; // Define the characters to use for OTP
   let OTP = "";
   const otpLength = 6;
@@ -11,7 +11,7 @@ const generateAndSaveOTP = (phoneNumber) => {
   const otpExpirationTime = new Date();
   otpExpirationTime.setMinutes(otpExpirationTime.getMinutes() + 5);
 
-  saveOTP(phoneNumber, OTP, otpExpirationTime);
+  await saveOTP(phoneNumber, OTP, otpExpirationTime);
 
   return OTP;
 };
