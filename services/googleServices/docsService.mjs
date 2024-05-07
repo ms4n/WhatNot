@@ -21,7 +21,7 @@ async function writeMessageToDocs(message, timestamp) {
 
     const docFile = await findOrCreateFile(fileMetadata);
 
-    console.log(docFile);
+    // console.log(docFile);
 
     const date = new Date(timestamp * 1000);
     const formattedDate = date.toLocaleDateString("en-us", {

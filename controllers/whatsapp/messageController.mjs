@@ -1,7 +1,9 @@
 import {
   getMediaObjectFromId,
   sendReactionMessage,
+  sendTextMessage,
 } from "../../utils/whatsappUtils.mjs";
+
 import {
   initializeDriveService,
   handleWhatsAppMediaUpload,
@@ -11,11 +13,14 @@ import {
   initializeDocsService,
   writeMessageToDocs,
 } from "../../services/googleServices/docsService.mjs";
+import {
+  createCalendarEvent,
+  initializeCalendarService,
+} from "../../services/googleServices/calendarService.mjs";
 
 const RESPONSE_MESSAGES = {
-  HELLO: "Hello! 👋 How can I assist you?",
-  GOODBYE: "Goodbye! Have a great day!",
-  DEFAULT: "Message added to docs.",
+  DEFAULT:
+    "Sorry, we currently only support text, image, document, audio, and video messages. If you haven't signed up to WhatNot App yet, you can do so here: https://whatnotapp.vercel.app/signup.",
   WELCOME_LINK:
     "Hello! 👋 Welcome to Whatnot! To get started, please sign up here: https://whatnotapp.vercel.app/signup. We're excited to have you on board!",
 };
@@ -35,15 +40,22 @@ async function handleIncomingMessage(message) {
 }
 
 async function handleTextMessage(message) {
-  const text = message.text.body;
+  const text = message.text.body.trim();
   const fromPhoneNumber = message.from;
   const timestamp = message.timestamp;
   const messageId = message.id;
 
-  if (text === "Hello! 👋") {
-    return RESPONSE_MESSAGES.WELCOME_LINK;
-  } else {
-    try {
+  try {
+    if (text === "Hello! 👋") {
+      await sendTextMessage(fromPhoneNumber, RESPONSE_MESSAGES.WELCOME_LINK);
+    } else if (text.toLowerCase().startsWith("/cal")) {
+      await initializeCalendarService(fromPhoneNumber);
+
+      const eventResponse = await createCalendarEvent(text);
+      if (eventResponse === 200) {
+        await sendReactionMessage(fromPhoneNumber, messageId, "✅");
+      }
+    } else {
       await initializeDriveService(fromPhoneNumber);
       await initializeDocsService(fromPhoneNumber);
 
@@ -51,12 +63,9 @@ async function handleTextMessage(message) {
       if (docsResposne === 200) {
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
       }
-    } catch (error) {
-      console.error(
-        "Error occurred while attempting to send reply message to WhatsApp:",
-        error
-      );
     }
+  } catch (error) {
+    console.error("Error occurred while handling text message:", error);
   }
 }
 
@@ -64,24 +73,30 @@ async function handleMediaMessage(message) {
   const mediaType = message.type;
   const mediaId = message[mediaType].id;
   const fromPhoneNumber = message.from;
+  const messageId = message.id;
+
   try {
     await initializeDriveService(fromPhoneNumber);
     const mediaObject = await getMediaObjectFromId(mediaId);
 
-    await handleWhatsAppMediaUpload(
+    const mediaUploadResponse = await handleWhatsAppMediaUpload(
       mediaObject,
       mediaType,
       mediaType === "document" ? message.document.filename : undefined
     );
 
-    const responseMessage = `Media uploaded to Google Drive`;
-    return responseMessage;
+    if (mediaUploadResponse === 200) {
+      await sendReactionMessage(fromPhoneNumber, messageId, "✅");
+    }
   } catch (error) {
     console.error(error);
     throw error;
   }
 }
 
-async function handleDefaultMessage(message) {}
+async function handleDefaultMessage(message) {
+  const fromPhoneNumber = message.from;
+  await sendTextMessage(fromPhoneNumber, RESPONSE_MESSAGES.DEFAULT);
+}
 
 export default { handleIncomingMessage };

@@ -49,7 +49,10 @@ async function createDriveItem(
       fields: "id",
     });
 
-    return driveItem.data.id;
+    return {
+      driveItemId: driveItem.data.id,
+      driveItemStatus: driveItem.status,
+    };
   } catch (err) {
     console.error("Error creating/uploading drive item:", err);
     throw err;
@@ -105,7 +108,8 @@ async function findOrCreateFolder(folderName, parentFolderId = undefined) {
       name: folderName,
       mimeType: folderMimeType,
     };
-    folderId = await createDriveItem(folderMetadata, true, parentFolderId);
+    folderId = (await createDriveItem(folderMetadata, true, parentFolderId))
+      .driveItemId;
   }
 
   return folderId;
@@ -121,7 +125,8 @@ async function findOrCreateFile(fileMetadata, parentFolderId = undefined) {
 
   // If the file doesn't exist, create it
   if (!fileId) {
-    fileId = await createDriveItem(fileMetadata, false, parentFolderId);
+    fileId = (await createDriveItem(fileMetadata, false, parentFolderId))
+      .driveItemId;
   }
 
   return fileId;
@@ -174,7 +179,14 @@ async function handleWhatsAppMediaUpload(
     };
 
     // Upload file to Google Drive
-    await createDriveItem(fileMetadata, false, subFolderId, media);
+    const driveItem = await createDriveItem(
+      fileMetadata,
+      false,
+      subFolderId,
+      media
+    );
+
+    return driveItem.driveItemStatus;
   } catch (err) {
     console.error("Whatsapp Media download and upload to Drive Error: ", err);
     throw err;
