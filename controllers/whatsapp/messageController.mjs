@@ -49,7 +49,7 @@ async function handleTextMessage(message) {
 
       const docsResposne = await writeMessageToDocs(text, timestamp);
       if (docsResposne === 200) {
-        await sendReactionMessage(fromPhoneNumber, messageId);
+        await sendReactionMessage(fromPhoneNumber, messageId, "✅");
       }
     } catch (error) {
       console.error(
