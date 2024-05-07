@@ -29,7 +29,7 @@ const saveOTP = async (phoneNumber, otp, otpExpirationTime) => {
     );
 
     if (error) {
-      console.error("Error saving OTP:", error.message);
+      console.error("Error saving OTP:", error);
       throw new Error("Failed to save OTP");
     }
 
