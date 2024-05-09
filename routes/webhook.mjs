@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const webhook_token = process.env.WEBHOOK_TOKEN;
+const webhook_token = process.env.WHATSAPP_WEBHOOK_TOKEN;
 
 router.get("/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
