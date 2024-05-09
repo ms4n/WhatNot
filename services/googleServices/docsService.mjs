@@ -1,5 +1,5 @@
-import { findOrCreateFile } from "./driveService.mjs"; 
-import { getDocsService } from "../../config/googleApiConfig.mjs"; 
+import { findOrCreateFile } from "./driveService.mjs";
+import { getDocsService } from "../../config/googleApiConfig.mjs";
 
 let docsService; // Variable to store the initialized Google Docs service
 
@@ -20,7 +20,7 @@ async function writeMessageToDocs(message, timestamp) {
   try {
     // Define metadata for the Google Docs file
     const fileMetadata = {
-      name: "Whatsapp NoteSync",
+      name: "Whatsapp Notes",
       mimeType: "application/vnd.google-apps.document",
     };
 
@@ -64,4 +64,4 @@ async function writeMessageToDocs(message, timestamp) {
   }
 }
 
-export { initializeDocsService, writeMessageToDocs }; 
+export { initializeDocsService, writeMessageToDocs };

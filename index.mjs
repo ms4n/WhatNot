@@ -2,18 +2,30 @@ import express, { json } from "express";
 import session from "express-session";
 import cors from "cors";
 
+import redis from "redis";
+import RedisStore from "connect-redis";
+
 import webhookRoutes from "./routes/webhook.mjs";
 import otpRoutes from "./routes/otpRoutes.mjs";
 import googleAuthRoutes from "./routes/googleAuthRoutes.mjs";
 
-const app = express();
+import dotenv from "dotenv";
+dotenv.config();
+
 const port = process.env.PORT || 8000;
+const app = express();
+
+const client = redis.createClient({
+  url: process.env.UPSTASH_REDIS_URL,
+});
+client.connect().catch(console.error);
 
 app.use(
   session({
-    secret: "your-secret-key",
+    store: new RedisStore({ client: client }),
+    secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
   })
 );
 
