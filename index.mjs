@@ -15,19 +15,26 @@ dotenv.config();
 const port = process.env.PORT || 8000;
 const app = express();
 
-const client = redis.createClient({
+const client = await redis.createClient({
   url: process.env.UPSTASH_REDIS_URL,
 });
 client.connect().catch(console.error);
 
-app.use(
-  session({
-    store: new RedisStore({ client: client }),
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+try {
+  await client.connect();
+  console.log("Connected to Redis client!");
+
+  app.use(
+    session({
+      store: new RedisStore({ client: client }),
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+} catch (error) {
+  console.error("Error connecting to Redis:", error);
+}
 
 app.use(json());
 app.use(
