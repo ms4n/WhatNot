@@ -18,7 +18,6 @@ const app = express();
 const client = await redis.createClient({
   url: process.env.UPSTASH_REDIS_URL,
 });
-client.connect().catch(console.error);
 
 try {
   await client.connect();
