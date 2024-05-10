@@ -12,7 +12,7 @@ async function handleOAuthCallback(req, res) {
     const authorizationCode = req.query.code;
     const tokens = await getAuthTokens(authorizationCode);
 
-    const phoneNumber = req.session.phoneNumber;
+    const phoneNumber = await req.session.phoneNumber;
     console.log("handleOAuthCallback", phoneNumber);
 
     await saveGoogleTokens(phoneNumber, tokens);
