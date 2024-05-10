@@ -13,10 +13,11 @@ async function handleOAuthCallback(req, res) {
     const tokens = await getAuthTokens(authorizationCode);
 
     const phoneNumber = req.session.phoneNumber;
+    console.log("handleOAuthCallback", phoneNumber);
 
     await saveGoogleTokens(phoneNumber, tokens);
 
-    res.redirect("http://localhost:3000/success");
+    res.redirect("https://whatnotapp.vercel.app/success");
   } catch (error) {
     console.error("Error handling OAuth callback:", error);
     res.status(500).send("Internal Server Error");
@@ -27,6 +28,8 @@ async function handleOAuthUrlGeneration(req, res) {
   try {
     const phoneNumber = req.headers["phonenumber"];
     req.session.phoneNumber = phoneNumber;
+
+    console.log("handleOAuthUrlGeneration:", req.session.phoneNumber);
 
     const isPhoneNumberVerified = await checkVerifiedPhoneNumber(phoneNumber);
 
