@@ -1,8 +1,8 @@
 {
-  "name": "whatnot-webhook",
+  "name": "whatnot-server",
   "type": "module",
   "version": "1.0.0",
-  "description": "whatsapp cloud api - webhook",
+  "description": "whatnot-server api",
   "main": "index.mjs",
   "scripts": {
     "start": "node index.mjs",
@@ -34,9 +34,6 @@
     "ioredis": "^5.4.1",
     "luxon": "^3.4.4",
     "nodemon": "^3.0.3",
-    "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
-    "prettier": "^3.1.1",
-    "redis": "^4.6.13"
+    "prettier": "^3.1.1"
   }
 }

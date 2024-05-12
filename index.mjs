@@ -37,7 +37,7 @@ app.use(
 app.use(json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://whatnotapp.vercel.app"],
+    origin: process.env.CORS_ORIGIN.split(","),
     credentials: true,
   })
 );
