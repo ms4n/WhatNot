@@ -1,0 +1,11 @@
+version: "3"
+services:
+  whatnot-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8080"
+    command: npm run dev
+    env_file:
+      - .env

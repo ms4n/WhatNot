@@ -21,3 +21,10 @@ EXPOSE 8080
 
 # Run the application
 CMD ["npm", "start"]
+
+
+# For local development
+# docker-compose -f docker-compose.yml -f docker-compose.local.yml up
+
+# For production
+# docker-compose -f docker-compose.yml -f docker-compose.prod.yml up

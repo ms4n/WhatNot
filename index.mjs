@@ -46,7 +46,7 @@ app.use("/", webhookRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/auth/google", googleAuthRoutes);
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 

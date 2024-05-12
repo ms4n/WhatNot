@@ -1,0 +1,4 @@
+version: "3"
+services:
+  whatnot-server:
+    image: sanjaym1/whatnot-server:v1
