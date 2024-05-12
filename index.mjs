@@ -2,7 +2,7 @@ import express, { json } from "express";
 import session from "express-session";
 import cors from "cors";
 
-import redis from "redis";
+import { Redis } from "ioredis";
 import RedisStore from "connect-redis";
 
 import webhookRoutes from "./routes/webhook.mjs";
@@ -15,10 +15,15 @@ dotenv.config();
 const port = process.env.PORT || 8000;
 const app = express();
 
-const client = redis.createClient({
-  url: process.env.UPSTASH_REDIS_URL,
+const client = new Redis(process.env.UPSTASH_REDIS_URL);
+
+client.on("connect", function () {
+  console.log("Redis client connected!");
 });
-client.connect().catch(console.error);
+
+client.on("error", function (error) {
+  console.error("Error connecting to redis client:", error);
+});
 
 app.use(
   session({

@@ -12,7 +12,8 @@ async function handleOAuthCallback(req, res) {
     const authorizationCode = req.query.code;
     const tokens = await getAuthTokens(authorizationCode);
 
-    const phoneNumber = req.session.phoneNumber;
+    const phoneNumber = await req.session.phoneNumber;
+    console.log("handleOAuthCallback", phoneNumber);
 
     await saveGoogleTokens(phoneNumber, tokens);
 
@@ -27,6 +28,8 @@ async function handleOAuthUrlGeneration(req, res) {
   try {
     const phoneNumber = req.headers["phonenumber"];
     req.session.phoneNumber = phoneNumber;
+
+    console.log("handleOAuthUrlGeneration:", req.session.phoneNumber);
 
     const isPhoneNumberVerified = await checkVerifiedPhoneNumber(phoneNumber);
 
