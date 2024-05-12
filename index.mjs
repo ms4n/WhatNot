@@ -12,7 +12,7 @@ import googleAuthRoutes from "./app/routes/googleAuthRoutes.mjs";
 import dotenv from "dotenv";
 dotenv.config();
 
-const port = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8080;
 const app = express();
 
 const client = new Redis(process.env.UPSTASH_REDIS_URL);
@@ -47,7 +47,7 @@ app.use("/api/otp", otpRoutes);
 app.use("/api/auth/google", googleAuthRoutes);
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${PORT}`);
 });
 
 app.get("/", (req, res) => {

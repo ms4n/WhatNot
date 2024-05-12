@@ -4,7 +4,6 @@
 *.orig
 
 .pastebin.txt 
-package-lock.json
 
 # Created by git when using merge tools for conflicts
 *.BACKUP.*
