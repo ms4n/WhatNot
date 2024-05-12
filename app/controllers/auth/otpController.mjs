@@ -1,5 +1,5 @@
 import otpService from "../../services/otpService.mjs";
-import { saveVerifiedPhoneNumber } from "../../database/db.mjs";
+import { saveVerifiedPhoneNumber } from "../../../database/db.mjs";
 import { sendTextMessage } from "../../utils/whatsappUtils.mjs";
 
 const handleOTPGeneration = async (phoneNumber) => {

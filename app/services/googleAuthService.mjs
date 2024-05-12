@@ -1,4 +1,4 @@
-import oauth2Client from "../config/googleOauthConfig.mjs";
+import oauth2Client from "../../config/googleOauthConfig.mjs";
 
 const scopes = [
   "https://www.googleapis.com/auth/drive.file",

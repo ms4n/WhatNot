@@ -5,9 +5,9 @@ import cors from "cors";
 import { Redis } from "ioredis";
 import RedisStore from "connect-redis";
 
-import webhookRoutes from "./routes/webhook.mjs";
-import otpRoutes from "./routes/otpRoutes.mjs";
-import googleAuthRoutes from "./routes/googleAuthRoutes.mjs";
+import webhookRoutes from "./app/routes/webhook.mjs";
+import otpRoutes from "./app/routes/otpRoutes.mjs";
+import googleAuthRoutes from "./app/routes/googleAuthRoutes.mjs";
 
 import dotenv from "dotenv";
 dotenv.config();

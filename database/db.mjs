@@ -3,7 +3,7 @@
 // Database functions for managing OTP, user data, and Google OAuth tokens
 
 import { supabase } from "./supabase.mjs";
-import { encryptToken, decryptToken } from "../utils/tokenUtils.mjs";
+import { encryptToken, decryptToken } from "../app/utils/tokenUtils.mjs";
 import oauth2Client from "../config/googleOauthConfig.mjs";
 
 // Save OTP (One-Time Password) for a given phone number with expiration time

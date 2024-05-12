@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
-import { getCalendarService } from "../../config/googleApiConfig.mjs";
-import gemini from "../../config/geminiConfig.mjs";
+import { getCalendarService } from "../../../config/googleApiConfig.mjs";
+import gemini from "../../../config/geminiConfig.mjs";
 
 let calendarService;
 

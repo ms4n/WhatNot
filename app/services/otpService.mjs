@@ -1,4 +1,4 @@
-import { saveOTP, validateOTP } from "../database/db.mjs";
+import { saveOTP, validateOTP } from "../../database/db.mjs";
 
 const generateAndSaveOTP = async (phoneNumber) => {
   const digits = "0123456789"; // Define the characters to use for OTP

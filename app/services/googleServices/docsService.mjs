@@ -1,5 +1,5 @@
 import { findOrCreateFile } from "./driveService.mjs";
-import { getDocsService } from "../../config/googleApiConfig.mjs";
+import { getDocsService } from "../../../config/googleApiConfig.mjs";
 
 let docsService; // Variable to store the initialized Google Docs service
 

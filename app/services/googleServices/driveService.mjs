@@ -7,7 +7,7 @@ dotenv.config();
 const WHATSAPP_API_ACCESS_TOKEN = process.env.WHATSAPP_API_ACCESS_TOKEN;
 const parentFolderName = "WhatNot App";
 
-import { getDriveService } from "../../config/googleApiConfig.mjs";
+import { getDriveService } from "../../../config/googleApiConfig.mjs";
 
 let driveService;
 async function initializeDriveService(phoneNumber) {

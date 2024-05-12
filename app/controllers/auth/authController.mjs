@@ -5,7 +5,7 @@ import {
 import {
   checkVerifiedPhoneNumber,
   saveGoogleTokens,
-} from "../../database/db.mjs";
+} from "../../../database/db.mjs";
 
 async function handleOAuthCallback(req, res) {
   try {
