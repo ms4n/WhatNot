@@ -1,8 +1,0 @@
-version: "3"
-services:
-  whatnot-server:
-    image: sanjaym1/whatnot-server:v1
-    environment:
-      - NODE_ENV=production
-    ports:
-      - "8080:8080"
