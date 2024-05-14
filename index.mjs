@@ -17,20 +17,18 @@ const app = express();
 
 const client = new Redis(process.env.UPSTASH_REDIS_URL);
 
-client.on("connect", function () {
-  console.log("Redis client connected!");
-});
+client.on("connect", () => console.log("Redis client connected!"));
 
-client.on("error", function (error) {
-  console.error("Error connecting to redis client:", error);
-});
+client.on("error", (error) =>
+  console.error("Error connecting to Redis:", error)
+);
 
 app.use(
   session({
     store: new RedisStore({ client: client }),
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
   })
 );
 
@@ -42,7 +40,7 @@ app.use(
   })
 );
 
-app.use("/", webhookRoutes);
+app.use("/api", webhookRoutes);
 app.use("/api/otp", otpRoutes);
 app.use("/api/auth/google", googleAuthRoutes);
 
@@ -51,5 +49,5 @@ app.listen(PORT, () => {
 });
 
 app.get("/", (req, res) => {
-  res.status(200).send("Webhook listening");
+  res.status(200).send("Webhook listening!");
 });

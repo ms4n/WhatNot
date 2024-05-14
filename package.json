@@ -6,6 +6,7 @@
   "main": "index.mjs",
   "scripts": {
     "start": "node index.mjs",
+    "healthcheck": "node healthcheck.mjs",
     "dev": "npx nodemon index.mjs"
   },
   "repository": {
