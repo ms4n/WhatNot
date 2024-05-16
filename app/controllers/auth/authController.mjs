@@ -17,7 +17,7 @@ async function handleOAuthCallback(req, res) {
 
     await saveGoogleTokens(phoneNumber, tokens);
 
-    res.redirect("https://whatnotapp.vercel.app/success");
+    res.redirect("https://whatnotapp.xyz/success");
   } catch (error) {
     console.error("Error handling OAuth callback:", error);
     res.status(500).send("Internal Server Error");

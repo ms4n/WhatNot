@@ -22,7 +22,7 @@ import {
 // Object containing response messages for different scenarios
 const RESPONSE_MESSAGES = {
   WELCOME_LINK:
-    "Hello! 👋 Welcome to Whatnot! To get started, please sign up here: https://whatnotapp.vercel.app/signup. We're excited to have you on board!",
+    "Hello! 👋 Welcome to Whatnot! To get started, please sign up here: https://whatnotapp.xyz/signup. We're excited to have you on board!",
   DEFAULT:
     "Sorry, we currently only support text, image, document, audio, and video messages. If you haven't signed up to WhatNot App yet, you can do so here: https://whatnotapp.vercel.app/signup.",
 };
