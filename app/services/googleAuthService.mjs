@@ -5,10 +5,11 @@ const scopes = [
   "https://www.googleapis.com/auth/calendar.events",
 ];
 
-export function generateAuthUrl() {
+export function generateAuthUrl(uuidToken) {
   return oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
+    state: uuidToken,
   });
 }
 

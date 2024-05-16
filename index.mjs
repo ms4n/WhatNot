@@ -1,9 +1,5 @@
 import express, { json } from "express";
-import session from "express-session";
 import cors from "cors";
-
-import { Redis } from "ioredis";
-import RedisStore from "connect-redis";
 
 import webhookRoutes from "./app/routes/webhook.mjs";
 import otpRoutes from "./app/routes/otpRoutes.mjs";
@@ -14,29 +10,6 @@ dotenv.config();
 
 const PORT = process.env.PORT || 8000;
 const app = express();
-
-const client = new Redis(process.env.UPSTASH_REDIS_URL);
-
-client.on("connect", () => console.log("Redis client connected!"));
-
-client.on("error", (error) =>
-  console.error("Error connecting to Redis:", error)
-);
-
-app.use(
-  session({
-    store: new RedisStore({ client: client }),
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: true,
-      httpOnly: true,
-      sameSite: "strict",
-      maxAge: 1000 * 60 * 60 * 24,
-    },
-  })
-);
 
 app.use(json());
 app.use(
@@ -54,6 +27,6 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   res.status(200).send("Webhook listening!");
 });

@@ -2,18 +2,25 @@ import {
   generateAuthUrl,
   getAuthTokens,
 } from "../../services/googleAuthService.mjs";
+
 import {
   checkVerifiedPhoneNumber,
   saveGoogleTokens,
 } from "../../../database/db.mjs";
+
+import { randomUUID } from "crypto";
+
+import redis from "../../../config/redisConfig.mjs";
 
 async function handleOAuthCallback(req, res) {
   try {
     const authorizationCode = req.query.code;
     const tokens = await getAuthTokens(authorizationCode);
 
-    const phoneNumber = await req.session.phoneNumber;
-    console.log("handleOAuthCallback", phoneNumber);
+    const uuidToken = req.query.state;
+    const phoneNumber = await redis.get(uuidToken);
+
+    console.log("handleOAuthCallback:", phoneNumber);
 
     await saveGoogleTokens(phoneNumber, tokens);
 
@@ -27,9 +34,7 @@ async function handleOAuthCallback(req, res) {
 async function handleOAuthUrlGeneration(req, res) {
   try {
     const phoneNumber = req.headers["phonenumber"];
-    req.session.phoneNumber = phoneNumber;
-
-    console.log("handleOAuthUrlGeneration:", req.session.phoneNumber);
+    const uuidToken = randomUUID();
 
     const isPhoneNumberVerified = await checkVerifiedPhoneNumber(phoneNumber);
 
@@ -38,8 +43,11 @@ async function handleOAuthUrlGeneration(req, res) {
       return res.status(403).json({ message: "Phone number not verified!" });
     }
 
+    await redis.set(uuidToken, phoneNumber);
+    await redis.expire(uuidToken, 86400); //expires after a day
+
     // Phone number is verified, generate the authentication URL
-    const authUrl = generateAuthUrl();
+    const authUrl = generateAuthUrl(uuidToken);
     res.json({ authUrl: authUrl });
   } catch (error) {
     console.error("Error generating Oauth URL: ", error);
