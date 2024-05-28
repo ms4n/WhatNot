@@ -20,8 +20,6 @@ async function handleOAuthCallback(req, res) {
     const uuidToken = req.query.state;
     const phoneNumber = await redis.get(uuidToken);
 
-    console.log("handleOAuthCallback:", phoneNumber);
-
     await saveGoogleTokens(phoneNumber, tokens);
 
     res.redirect("https://whatnotapp.xyz/success");

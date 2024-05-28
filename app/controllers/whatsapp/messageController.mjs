@@ -62,9 +62,10 @@ async function handleTextMessage(message) {
 
       // Create a calendar event based on the message content
       const eventResponse = await createCalendarEvent(text);
-      if (eventResponse === 200) {
-        // If the event creation is successful, send a confirmation message
+      if (eventResponse.status === 200) {
+        // If the event creation is successful, send a confirmation message and event link
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
+        await sendTextMessage(fromPhoneNumber, eventResponse.eventLink);
       }
     } else {
       // If it's not a greeting or a calendar event, handle as a regular message

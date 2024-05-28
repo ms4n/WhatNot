@@ -19,14 +19,15 @@ app.use(
   })
 );
 
-app.use("/api", webhookRoutes);
-app.use("/api/otp", otpRoutes);
-app.use("/api/auth/google", googleAuthRoutes);
+//api v1 routes
+app.use("/v1", webhookRoutes);
+app.use("/v1/otp", otpRoutes);
+app.use("/v1/auth/google", googleAuthRoutes);
+
+app.get("/v1/", (req, res) => {
+  res.status(200).send("Webhook listening!");
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-app.get("/api/", (req, res) => {
-  res.status(200).send("Webhook listening!");
 });
