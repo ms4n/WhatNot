@@ -194,7 +194,7 @@ const fetchGoogleAccessToken = async (phoneNumber) => {
         data.google_access_token_encrypted,
         data.google_access_token_iv
       );
-      console.log(decryptedAccessToken);
+      return decryptedAccessToken;
     } else {
       return renewGoogleAccessToken(phoneNumber);
     }

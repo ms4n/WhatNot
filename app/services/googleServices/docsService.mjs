@@ -29,22 +29,25 @@ async function writeMessageToDocs(message, timestamp) {
 
     // Format the timestamp into human-readable date and time
     const date = new Date(timestamp * 1000);
-    const formattedDate = date.toLocaleDateString("en-us", {
+    const options = {
       weekday: "long",
       year: "numeric",
       month: "short",
       day: "numeric",
-    });
-    const hours = ("0" + date.getHours()).slice(-2);
-    const minutes = ("0" + date.getMinutes()).slice(-2);
-    const formattedTime = `${hours}:${minutes}`;
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Calcutta",
+    };
+
+    const formattedDateAndTime = date.toLocaleDateString("en-US", options);
 
     // Define requests to insert text into the Google Docs file
     const requests = [
       {
         insertText: {
           endOfSegmentLocation: { segmentId: "" },
-          text: `Date: ${formattedTime}, ${formattedDate} \n${message}\n\n`,
+          text: `Date: ${formattedDateAndTime} \n${message}\n\n`,
         },
       },
     ];
