@@ -4,12 +4,15 @@ import cors from "cors";
 import webhookRoutes from "./app/routes/webhook.mjs";
 import otpRoutes from "./app/routes/otpRoutes.mjs";
 import googleAuthRoutes from "./app/routes/googleAuthRoutes.mjs";
+// import reminderService from "./app/services/reminderService.mjs";
 
 import dotenv from "dotenv";
 dotenv.config();
 
 const PORT = process.env.PORT || 8000;
 const app = express();
+
+// reminderService();
 
 app.use(json());
 app.use(

@@ -255,6 +255,27 @@ const renewGoogleAccessToken = async (phoneNumber) => {
   }
 };
 
+const saveReminder = async (phoneNumber, reminderTime, reminderText) => {
+  try {
+    const { data, error } = await supabase.from("REMINDERS").insert([
+      {
+        phone_number: phoneNumber,
+        reminder_time: reminderTime,
+        reminder_text: reminderText,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error saving reminder:", error);
+      throw new Error("Failed to save reminder!");
+    }
+    return { statusCode: 200, data: data };
+  } catch (error) {
+    console.error("Error saving reminder:", error.message);
+    throw error;
+  }
+};
+
 export {
   saveOTP,
   validateOTP,
@@ -263,6 +284,7 @@ export {
   checkVerifiedPhoneNumber,
   fetchGoogleAccessToken,
   renewGoogleAccessToken,
+  saveReminder,
 };
 
 //TODO: implementing caching for access tokens

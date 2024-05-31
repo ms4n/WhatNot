@@ -2,6 +2,7 @@ import {
   getMediaObjectFromId,
   sendReactionMessage,
   sendTextMessage,
+  sendReminderMessage,
 } from "../../utils/whatsappUtils.mjs";
 
 import {
@@ -18,6 +19,8 @@ import {
   createCalendarEvent,
   initializeCalendarService,
 } from "../../services/googleServices/calendarService.mjs";
+
+import { generateReminderAndSave } from "../../services/reminderService.mjs";
 
 // Object containing response messages for different scenarios
 const RESPONSE_MESSAGES = {
@@ -56,6 +59,10 @@ async function handleTextMessage(message) {
     if (text === "Hello! 👋") {
       // Send a welcome message
       await sendTextMessage(fromPhoneNumber, RESPONSE_MESSAGES.WELCOME_LINK);
+      await sendReminderMessage(
+        fromPhoneNumber,
+        "This a test message for reminders from templates, after 24 hours!"
+      );
     } else if (text.toLowerCase().startsWith("/cal")) {
       // Check if the text message is a calendar event request
       await initializeCalendarService(fromPhoneNumber); // Initialize Google Calendar service
@@ -67,8 +74,16 @@ async function handleTextMessage(message) {
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
         await sendTextMessage(fromPhoneNumber, eventResponse.eventLink);
       }
+    } else if (text.toLowerCase().startsWith("/rem")) {
+      const reminderResponse = await generateReminderAndSave(
+        fromPhoneNumber,
+        text
+      );
+      if (reminderResponse === 200) {
+        await sendReactionMessage(fromPhoneNumber, messageId, "✅");
+      }
     } else {
-      // If it's not a greeting or a calendar event, handle as a regular message
+      // If it's not a greeting or a calendar event or reminder, handle as a regular message (docs)
       await initializeDriveService(fromPhoneNumber); // Initialize Google Drive service
       await initializeDocsService(fromPhoneNumber); // Initialize Google Docs service
 

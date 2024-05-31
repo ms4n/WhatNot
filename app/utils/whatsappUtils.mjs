@@ -75,4 +75,78 @@ async function sendTextMessage(toPhoneNumber, messageBody) {
   }
 }
 
-export { getMediaObjectFromId, sendReactionMessage, sendTextMessage };
+async function sendReminderMessage(toPhoneNumber, reminderText) {
+  const message_url = `${whatsappApiUrl}${phoneNumberId}/messages`;
+  const headers = {
+    Authorization: `Bearer ${WHATSAPP_API_ACCESS_TOKEN}`,
+    "Content-Type": "application/json",
+  };
+
+  const data = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: toPhoneNumber,
+    type: "template",
+    template: {
+      name: "whatnot_reminder",
+      language: {
+        code: "en",
+      },
+      components: [
+        {
+          type: "body",
+          parameters: [
+            {
+              type: "text",
+              text: reminderText,
+            },
+          ],
+        },
+      ],
+    },
+  };
+
+  try {
+    const res = await axios.post(message_url, data, { headers });
+    return res;
+  } catch (error) {
+    console.error("Error sending reminder message:", error);
+    throw error;
+  }
+}
+
+export {
+  getMediaObjectFromId,
+  sendReactionMessage,
+  sendTextMessage,
+  sendReminderMessage,
+};
+
+// curl -X  POST \
+//  'https://graph.facebook.com/v20.0/FROM_PHONE_NUMBER_ID/messages' \
+//  -H 'Authorization: Bearer ACCESS_TOKEN' \
+//  -H 'Content-Type: application/json' \
+//  -d '{
+//   "messaging_product": "whatsapp",
+//   "recipient_type": "individual",
+//   "to": "PHONE_NUMBER",
+//   "type": "template",
+//   "template": {
+//     "name": "reminder",
+//     "language": {
+//       "code": "en_US"
+//     },
+//     "components": [
+//       {           "text": "text-string"
+//           },
+
+//         ]
+//       }
+//     ]
+//   }
+// }'
+
+//       }
+//     ]
+//   }
+// }'
