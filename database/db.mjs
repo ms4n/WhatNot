@@ -276,6 +276,46 @@ const saveReminder = async (phoneNumber, reminderTime, reminderText) => {
   }
 };
 
+const fetchReminders = async (currentTime, reminderCheckTime) => {
+  try {
+    const { data, error } = await supabase
+      .from("REMINDERS")
+      .select("*")
+      .eq("status", "pending")
+      .gte("reminder_time", currentTime)
+      .lte("reminder_time", reminderCheckTime);
+
+    if (error) {
+      throw new Error("Failed to fetch reminders: " + error.message);
+    }
+
+    if (!data) {
+      throw new Error("No reminders found!");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching reminders:", error.message);
+    throw error;
+  }
+};
+
+const updateReminderStatus = async (reminderId, status) => {
+  try {
+    const { error } = await supabase
+      .from("reminders")
+      .update({ status: status })
+      .eq("id", reminderId);
+
+    if (error) {
+      throw new Error("Failed to update reminder status: " + error.message);
+    }
+  } catch (error) {
+    console.error("Error updating reminder status:", error.message);
+    throw error;
+  }
+};
+
 export {
   saveOTP,
   validateOTP,
@@ -285,6 +325,8 @@ export {
   fetchGoogleAccessToken,
   renewGoogleAccessToken,
   saveReminder,
+  fetchReminders,
+  updateReminderStatus,
 };
 
 //TODO: implementing caching for access tokens
