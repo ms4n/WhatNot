@@ -56,12 +56,18 @@ async function generateReminderAndSave(fromPhoneNumber, message) {
 }
 
 async function checkRemindersAndSend() {
-  cron.schedule("*/3 * * * *", async () => {
+  cron.schedule("*/2 * * * *", async () => {
     try {
-      console.log("Running a task every 3 minutes");
-
       const currentTime = DateTime.now().setZone("Asia/Calcutta");
-      const reminderCheckTime = currentTime.plus({ minutes: 5 });
+      const reminderCheckTime = currentTime.plus({ minutes: 2 });
+
+      console.log(
+        `Reminder cron last ran at ${currentTime.toLocaleString(
+          DateTime.DATETIME_MED
+        )}. Checking for reminders until ${reminderCheckTime.toLocaleString(
+          DateTime.DATETIME_MED
+        )}.`
+      );
 
       const reminders = await fetchReminders(
         currentTime.toISO(),
@@ -69,7 +75,7 @@ async function checkRemindersAndSend() {
       );
 
       if (!reminders || reminders.length === 0) {
-        console.log("No reminders found for the next 5 minutes.");
+        console.log("No reminders found for the next 2 minutes.");
         return; // Exit early if there are no reminders
       }
 

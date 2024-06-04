@@ -300,11 +300,11 @@ const fetchReminders = async (currentTime, reminderCheckTime) => {
   }
 };
 
-const updateReminderStatus = async (reminderId, status) => {
+const updateReminderStatus = async (reminderId, statusMessage) => {
   try {
     const { error } = await supabase
-      .from("reminders")
-      .update({ status: status })
+      .from("REMINDERS")
+      .update({ status: statusMessage })
       .eq("id", reminderId);
 
     if (error) {
