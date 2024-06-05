@@ -48,7 +48,10 @@ async function generateReminderAndSave(fromPhoneNumber, message) {
       reminderJsonObject.reminder_text
     );
 
-    return reminder.statusCode;
+    return {
+      statusCode: reminder.statusCode,
+      reminderTime: reminderJsonObject.reminder_time,
+    };
   } catch (error) {
     console.error("Error generating and saving reminder:", error.message);
     throw error;
@@ -59,7 +62,7 @@ async function checkRemindersAndSend() {
   cron.schedule("*/2 * * * *", async () => {
     try {
       const currentTime = DateTime.now().setZone("Asia/Calcutta");
-      const reminderCheckTime = currentTime.plus({ minutes: 2 });
+      const reminderCheckTime = currentTime.plus({ minutes: 3 });
 
       console.log(
         `Reminder cron last ran at ${currentTime.toLocaleString(
@@ -75,7 +78,7 @@ async function checkRemindersAndSend() {
       );
 
       if (!reminders || reminders.length === 0) {
-        console.log("No reminders found for the next 2 minutes.");
+        console.log("No reminders found for the next 3 minutes.");
         return; // Exit early if there are no reminders
       }
 
@@ -87,7 +90,10 @@ async function checkRemindersAndSend() {
         await updateReminderStatus(reminder.id, "sent");
       }
     } catch (error) {
-      console.error("Error in checkRemindersAndSend cron job:", error.message);
+      console.error(
+        "Error in check reminders and send cron job:",
+        error.message
+      );
     }
   });
 }

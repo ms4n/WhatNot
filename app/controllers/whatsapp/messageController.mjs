@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import {
   getMediaObjectFromId,
   sendReactionMessage,
@@ -28,6 +30,8 @@ const RESPONSE_MESSAGES = {
     "Hello! 👋 Welcome to Whatnot! To get started, please sign up here: https://whatnotapp.xyz/signup. We're excited to have you on board!",
   DEFAULT:
     "Sorry, we currently only support text, image, document, audio, and video messages. If you haven't signed up to WhatNot App yet, you can do so here: https://whatnotapp.vercel.app/signup.",
+  REMINDER_CONFIRMATION: (reminderTime) =>
+    `Reminder set! A message will be sent to you before ${reminderTime}.`,
 };
 
 // Function to handle incoming messages
@@ -59,10 +63,6 @@ async function handleTextMessage(message) {
     if (text === "Hello! 👋") {
       // Send a welcome message
       await sendTextMessage(fromPhoneNumber, RESPONSE_MESSAGES.WELCOME_LINK);
-      await sendReminderMessage(
-        fromPhoneNumber,
-        "This a test message for reminders from templates, after 24 hours!"
-      );
     } else if (text.toLowerCase().startsWith("/cal")) {
       // Check if the text message is a calendar event request
       await initializeCalendarService(fromPhoneNumber); // Initialize Google Calendar service
@@ -79,8 +79,16 @@ async function handleTextMessage(message) {
         fromPhoneNumber,
         text
       );
-      if (reminderResponse === 200) {
+      if (reminderResponse.statusCode === 200) {
+        const reminderTime = DateTime.fromISO(
+          reminderResponse.reminderTime
+        ).toLocaleString(DateTime.DATETIME_MED);
+
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
+        await sendTextMessage(
+          fromPhoneNumber,
+          RESPONSE_MESSAGES.REMINDER_CONFIRMATION(reminderTime)
+        );
       }
     } else {
       // If it's not a greeting or a calendar event or reminder, handle as a regular message (docs)
