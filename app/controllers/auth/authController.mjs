@@ -11,6 +11,7 @@ import {
 import { randomUUID } from "crypto";
 
 import redis from "../../../config/redisConfig.mjs";
+import { setAccessToken } from "../../utils/redisUtils.mjs";
 
 async function handleOAuthCallback(req, res) {
   try {
@@ -20,6 +21,7 @@ async function handleOAuthCallback(req, res) {
     const uuidToken = req.query.state;
     const phoneNumber = await redis.get(uuidToken);
 
+    await setAccessToken(phoneNumber, tokens.access_token);
     await saveGoogleTokens(phoneNumber, tokens);
 
     res.redirect("https://whatnotapp.xyz/success");

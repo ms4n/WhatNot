@@ -128,9 +128,6 @@ const checkVerifiedPhoneNumber = async (phoneNumber) => {
 // - tokens: Google OAuth tokens to be saved
 const saveGoogleTokens = async (phoneNumber, tokens) => {
   try {
-    const encryptedAccessToken = tokens.access_token
-      ? encryptToken(tokens.access_token)
-      : null;
     const encryptedRefreshToken = tokens.refresh_token
       ? encryptToken(tokens.refresh_token)
       : null;
@@ -138,11 +135,6 @@ const saveGoogleTokens = async (phoneNumber, tokens) => {
     const upsertData = {
       phone_number: phoneNumber,
       google_access_token_expiry_date: tokens.expiry_date,
-
-      ...(encryptedAccessToken && {
-        google_access_token_encrypted: encryptedAccessToken.encryptedData,
-        google_access_token_iv: encryptedAccessToken.iv,
-      }),
 
       ...(encryptedRefreshToken && {
         google_refresh_token_encrypted: encryptedRefreshToken.encryptedData,
@@ -163,43 +155,6 @@ const saveGoogleTokens = async (phoneNumber, tokens) => {
     return data;
   } catch (error) {
     console.error("Error saving google oauth tokens:", error.message);
-    throw error;
-  }
-};
-
-// Fetch Google Access Token for a given phone number, renews the access token if it's expired
-// Parameters:
-// - phoneNumber: Phone number associated with the access token
-// Returns: Working Google Access Token
-const fetchGoogleAccessToken = async (phoneNumber) => {
-  try {
-    const { data, error } = await supabase
-      .from("USER")
-      .select(
-        "google_access_token_expiry_date, google_access_token_encrypted, google_access_token_iv"
-      )
-      .eq("phone_number", phoneNumber)
-      .single();
-
-    if (error) {
-      throw new Error("Failed to fetch Google Access token: " + error.message);
-    }
-
-    if (!data) {
-      throw new Error("Access token data not found");
-    }
-
-    if (data.google_access_token_expiry_date > Date.now()) {
-      const decryptedAccessToken = decryptToken(
-        data.google_access_token_encrypted,
-        data.google_access_token_iv
-      );
-      return decryptedAccessToken;
-    } else {
-      return renewGoogleAccessToken(phoneNumber);
-    }
-  } catch (error) {
-    console.error("Error fetching Google Access token:", error.message);
     throw error;
   }
 };
@@ -322,7 +277,6 @@ export {
   saveGoogleTokens,
   saveVerifiedPhoneNumber,
   checkVerifiedPhoneNumber,
-  fetchGoogleAccessToken,
   renewGoogleAccessToken,
   saveReminder,
   fetchReminders,
