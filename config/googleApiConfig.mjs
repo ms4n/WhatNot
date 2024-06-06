@@ -1,8 +1,8 @@
 import { google } from "googleapis";
-import { fetchGoogleAccessToken } from "../database/db.mjs";
+import { getAccessToken } from "../app/utils/redisUtils.mjs";
 // Function to initialize the OAuth2 client with the access token
 const initializeAuth = async (phoneNumber) => {
-  const accessToken = await fetchGoogleAccessToken(phoneNumber);
+  const accessToken = await getAccessToken(phoneNumber);
 
   // Initialize OAuth2 client with the retrieved access token
   const auth = new google.auth.OAuth2();

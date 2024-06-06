@@ -1,4 +1,5 @@
 import redis from "../../config/redisConfig.mjs";
+import { renewGoogleAccessToken } from "../../database/db.mjs";
 
 async function setAccessToken(phoneNumber, accessToken) {
   const key = phoneNumber;
@@ -12,7 +13,14 @@ async function setAccessToken(phoneNumber, accessToken) {
 
 async function getAccessToken(phoneNumber) {
   const key = phoneNumber;
-  return await redis.hget(key, "accessToken");
+  let accessToken = await redis.hget(key, "accessToken");
+
+  if (!accessToken) {
+    accessToken = await renewGoogleAccessToken(phoneNumber);
+    await setAccessToken(phoneNumber, accessToken);
+  }
+
+  return accessToken;
 }
 
 async function setMainFolderId(phoneNumber, folderId) {
@@ -25,44 +33,20 @@ async function getMainFolderId(phoneNumber) {
   return await redis.hget(key, "mainFolderId");
 }
 
-async function setImageFilesFolderId(phoneNumber, folderId) {
+async function setSubFolderId(phoneNumber, folderName, folderId) {
   const key = phoneNumber;
-  await redis.hset(key, "imageFilesFolderId", folderId);
+  await redis.hset(
+    key,
+    folderName.trim().toLowerCase().replace(/\s+/g, "") + "FolderId",
+    folderId
+  );
 }
 
-async function getImageFilesFolderId(phoneNumber) {
+async function getSubFolderId(phoneNumber, folderName) {
   const key = phoneNumber;
-  return await redis.hget(key, "imageFilesFolderId");
-}
-
-async function setVideoFilesFolderId(phoneNumber, folderId) {
-  const key = phoneNumber;
-  await redis.hset(key, "videoFilesFolderId", folderId);
-}
-
-async function getVideoFilesFolderId(phoneNumber) {
-  const key = phoneNumber;
-  return await redis.hget(key, "videoFilesFolderId");
-}
-
-async function setAudioFilesFolderId(phoneNumber, folderId) {
-  const key = phoneNumber;
-  await redis.hset(key, "audioFilesFolderId", folderId);
-}
-
-async function getAudioFilesFolderId(phoneNumber) {
-  const key = phoneNumber;
-  return await redis.hget(key, "audioFilesFolderId");
-}
-
-async function setDocumentFilesFolderId(phoneNumber, folderId) {
-  const key = phoneNumber;
-  await redis.hset(key, "documentFilesFolderId", folderId);
-}
-
-async function getDocumentFilesFolderId(phoneNumber) {
-  const key = phoneNumber;
-  return await redis.hget(key, "documentFilesFolderId");
+  const folderIdFieldName =
+    folderName.trim().toLowerCase().replace(/\s+/g, "") + "FolderId";
+  return await redis.hget(key, folderIdFieldName);
 }
 
 async function setDocId(phoneNumber, docId) {
@@ -80,14 +64,8 @@ export {
   getAccessToken,
   setMainFolderId,
   getMainFolderId,
-  setImageFilesFolderId,
-  getImageFilesFolderId,
-  setVideoFilesFolderId,
-  getVideoFilesFolderId,
-  setAudioFilesFolderId,
-  getAudioFilesFolderId,
-  setDocumentFilesFolderId,
-  getDocumentFilesFolderId,
+  getSubFolderId,
+  setSubFolderId,
   setDocId,
   getDocId,
 };

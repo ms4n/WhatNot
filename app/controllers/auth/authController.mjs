@@ -11,6 +11,7 @@ import {
 import { randomUUID } from "crypto";
 
 import redis from "../../../config/redisConfig.mjs";
+import { setAccessToken } from "../../utils/redisUtils.mjs";
 
 async function handleOAuthCallback(req, res) {
   try {
@@ -20,6 +21,9 @@ async function handleOAuthCallback(req, res) {
     const uuidToken = req.query.state;
     const phoneNumber = await redis.get(uuidToken);
 
+    console.log(tokens);
+
+    await setAccessToken(phoneNumber, tokens.access_token);
     await saveGoogleTokens(phoneNumber, tokens);
 
     res.redirect("https://whatnotapp.xyz/success");
@@ -42,7 +46,7 @@ async function handleOAuthUrlGeneration(req, res) {
     }
 
     await redis.set(uuidToken, phoneNumber);
-    await redis.expire(uuidToken, 86400); //expires after a day
+    await redis.expire(uuidToken, 60 * 60); //expires after a day
 
     // Phone number is verified, generate the authentication URL
     const authUrl = generateAuthUrl(uuidToken);
