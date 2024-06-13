@@ -4,7 +4,7 @@ dotenv.config();
 
 const WHATSAPP_API_ACCESS_TOKEN = process.env.WHATSAPP_API_ACCESS_TOKEN;
 const phoneNumberId = process.env.PHONE_NUMBER_ID;
-const whatsappApiUrl = "https://graph.facebook.com/v19.0/";
+const whatsappApiUrl = "https://graph.facebook.com/v20.0/";
 
 async function getMediaObjectFromId(mediaId) {
   const media_url = `${whatsappApiUrl}${mediaId}`;
