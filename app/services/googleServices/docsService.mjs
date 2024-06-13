@@ -1,6 +1,5 @@
 import { findOrCreateFile } from "./driveService.mjs";
 import { getDocsService } from "../../../config/googleApiConfig.mjs";
-import { getDocId, setDocId } from "../../utils/redisUtils.mjs";
 
 let docsService; // Variable to store the initialized Google Docs service
 
@@ -17,7 +16,7 @@ async function initializeDocsService(phoneNumber) {
 }
 
 // Function to write a message to a Google Docs document
-async function writeMessageToDocs(phoneNumber, message, timestamp) {
+async function writeMessageToDocs(message, timestamp) {
   try {
     // Define metadata for the Google Docs file
     const fileMetadata = {
@@ -26,34 +25,26 @@ async function writeMessageToDocs(phoneNumber, message, timestamp) {
     };
 
     // Find or create the Google Docs file
-    let docFile = await getDocId(phoneNumber);
-
-    if (!docFile) {
-      docFile = await findOrCreateFile(phoneNumber, fileMetadata);
-      await setDocId(phoneNumber, docFile);
-    }
+    const docFile = await findOrCreateFile(fileMetadata);
 
     // Format the timestamp into human-readable date and time
     const date = new Date(timestamp * 1000);
-    const options = {
+    const formattedDate = date.toLocaleDateString("en-us", {
       weekday: "long",
       year: "numeric",
       month: "short",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-      timeZone: "Asia/Calcutta",
-    };
-
-    const formattedDateAndTime = date.toLocaleDateString("en-US", options);
+    });
+    const hours = ("0" + date.getHours()).slice(-2);
+    const minutes = ("0" + date.getMinutes()).slice(-2);
+    const formattedTime = `${hours}:${minutes}`;
 
     // Define requests to insert text into the Google Docs file
     const requests = [
       {
         insertText: {
           endOfSegmentLocation: { segmentId: "" },
-          text: `Date: ${formattedDateAndTime} \n${message}\n\n`,
+          text: `Date: ${formattedTime}, ${formattedDate} \n${message}\n\n`,
         },
       },
     ];

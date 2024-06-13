@@ -8,12 +8,6 @@ const WHATSAPP_API_ACCESS_TOKEN = process.env.WHATSAPP_API_ACCESS_TOKEN;
 const parentFolderName = "WhatNot";
 
 import { getDriveService } from "../../../config/googleApiConfig.mjs";
-import {
-  getMainFolderId,
-  getSubFolderId,
-  setMainFolderId,
-  setSubFolderId,
-} from "../../utils/redisUtils.mjs";
 
 let driveService;
 async function initializeDriveService(phoneNumber) {
@@ -26,7 +20,6 @@ async function initializeDriveService(phoneNumber) {
 }
 
 async function createDriveItem(
-  phoneNumber,
   itemMetadata,
   isFolder = false,
   parentFolderId = undefined,
@@ -45,11 +38,7 @@ async function createDriveItem(
 
     // If parent folder not provided, create or find one
     if (!parentFolderId && !isFolder) {
-      const parentFolder = await findOrCreateFolder(
-        phoneNumber,
-        parentFolderName,
-        true
-      );
+      const parentFolder = await findOrCreateFolder(parentFolderName);
       itemMetadata.parents = [parentFolder];
     }
 
@@ -103,53 +92,30 @@ async function findDriveItem(
   }
 }
 
-async function findOrCreateFolder(
-  phoneNumber,
-  folderName,
-  isParentFolder = false,
-  parentFolderId = undefined
-) {
+async function findOrCreateFolder(folderName, parentFolderId = undefined) {
   const folderMimeType = "application/vnd.google-apps.folder";
 
-  let folderId;
+  // Try to find the folder
+  let folderId = await findDriveItem(
+    folderName,
+    folderMimeType,
+    parentFolderId
+  );
 
-  if (isParentFolder) {
-    // Check if the main folder ID is in Redis
-    folderId = await getMainFolderId(phoneNumber);
-  } else {
-    // Check if the subfolder ID is in Redis
-    folderId = await getSubFolderId(phoneNumber, folderName);
-  }
-
-  // If the folder ID is not in Redis, try to find it on Google Drive
+  // If the folder doesn't exist, create it
   if (!folderId) {
-    folderId = await findDriveItem(folderName, folderMimeType, parentFolderId);
-
-    // If the folder doesn't exist, create it
-    if (!folderId) {
-      const folderMetadata = {
-        name: folderName,
-        mimeType: folderMimeType,
-      };
-      folderId = (await createDriveItem(folderMetadata, true, parentFolderId))
-        .driveItemId;
-    }
-    // Store the found or newly created folder ID in Redis
-    if (isParentFolder) {
-      await setMainFolderId(phoneNumber, folderId);
-    } else {
-      await setSubFolderId(phoneNumber, folderName, folderId);
-    }
+    const folderMetadata = {
+      name: folderName,
+      mimeType: folderMimeType,
+    };
+    folderId = (await createDriveItem(folderMetadata, true, parentFolderId))
+      .driveItemId;
   }
 
   return folderId;
 }
 
-async function findOrCreateFile(
-  phoneNumber,
-  fileMetadata,
-  parentFolderId = undefined
-) {
+async function findOrCreateFile(fileMetadata, parentFolderId = undefined) {
   // Try to find the file
   let fileId = await findDriveItem(
     fileMetadata.name,
@@ -159,16 +125,14 @@ async function findOrCreateFile(
 
   // If the file doesn't exist, create it
   if (!fileId) {
-    fileId = (
-      await createDriveItem(phoneNumber, fileMetadata, false, parentFolderId)
-    ).driveItemId;
+    fileId = (await createDriveItem(fileMetadata, false, parentFolderId))
+      .driveItemId;
   }
 
   return fileId;
 }
 
 async function handleWhatsAppMediaUpload(
-  phoneNumber,
   mediaObject,
   mediaType,
   fileName = undefined
@@ -200,17 +164,8 @@ async function handleWhatsAppMediaUpload(
     const subFolderName = `${mediaType} files`;
 
     // Find or create parent folder and subfolder
-    const parentFolderId = await findOrCreateFolder(
-      phoneNumber,
-      parentFolderName,
-      true
-    );
-    const subFolderId = await findOrCreateFolder(
-      phoneNumber,
-      subFolderName,
-      false,
-      parentFolderId
-    );
+    const parentFolderId = await findOrCreateFolder(parentFolderName);
+    const subFolderId = await findOrCreateFolder(subFolderName, parentFolderId);
 
     // Prepare metadata for the file
     const fileMetadata = {
@@ -225,7 +180,6 @@ async function handleWhatsAppMediaUpload(
 
     // Upload file to Google Drive
     const driveItem = await createDriveItem(
-      phoneNumber,
       fileMetadata,
       false,
       subFolderId,

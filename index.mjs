@@ -12,7 +12,7 @@ dotenv.config();
 const PORT = process.env.PORT || 8000;
 const app = express();
 
-checkRemindersAndSend();
+// checkRemindersAndSend();
 
 app.use(json());
 app.use(
