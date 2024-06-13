@@ -96,7 +96,11 @@ async function handleTextMessage(message) {
       await initializeDocsService(fromPhoneNumber); // Initialize Google Docs service
 
       // Write the message to a Google Docs document
-      const docsResposne = await writeMessageToDocs(text, timestamp);
+      const docsResposne = await writeMessageToDocs(
+        fromPhoneNumber,
+        text,
+        timestamp
+      );
       if (docsResposne === 200) {
         // If writing to Docs is successful, send a confirmation message
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
@@ -124,6 +128,7 @@ async function handleMediaMessage(message) {
 
     // Handle media upload to Google Drive
     const mediaUploadResponse = await handleWhatsAppMediaUpload(
+      fromPhoneNumber,
       mediaObject,
       mediaType,
       mediaType === "document" ? message.document.filename : undefined

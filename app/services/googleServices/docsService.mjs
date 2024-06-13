@@ -1,5 +1,6 @@
 import { findOrCreateFile } from "./driveService.mjs";
 import { getDocsService } from "../../../config/googleApiConfig.mjs";
+import { getDocId, setDocId } from "../../utils/redisUtils.mjs";
 
 let docsService; // Variable to store the initialized Google Docs service
 
@@ -16,7 +17,7 @@ async function initializeDocsService(phoneNumber) {
 }
 
 // Function to write a message to a Google Docs document
-async function writeMessageToDocs(message, timestamp) {
+async function writeMessageToDocs(phoneNumber, message, timestamp) {
   try {
     // Define metadata for the Google Docs file
     const fileMetadata = {
@@ -25,7 +26,12 @@ async function writeMessageToDocs(message, timestamp) {
     };
 
     // Find or create the Google Docs file
-    const docFile = await findOrCreateFile(fileMetadata);
+    let docFile = await getDocId(phoneNumber);
+
+    if (!docFile) {
+      docFile = await findOrCreateFile(phoneNumber, fileMetadata);
+      await setDocId(phoneNumber, docFile);
+    }
 
     // Format the timestamp into human-readable date and time
     const date = new Date(timestamp * 1000);

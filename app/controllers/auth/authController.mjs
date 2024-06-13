@@ -21,8 +21,6 @@ async function handleOAuthCallback(req, res) {
     const uuidToken = req.query.state;
     const phoneNumber = await redis.get(uuidToken);
 
-    console.log(tokens);
-
     await setAccessToken(phoneNumber, tokens.access_token);
     await saveGoogleTokens(phoneNumber, tokens);
 
@@ -46,7 +44,7 @@ async function handleOAuthUrlGeneration(req, res) {
     }
 
     await redis.set(uuidToken, phoneNumber);
-    await redis.expire(uuidToken, 60 * 60); //expires after a day
+    await redis.expire(uuidToken, 60 * 60); //expires after an hour
 
     // Phone number is verified, generate the authentication URL
     const authUrl = generateAuthUrl(uuidToken);
