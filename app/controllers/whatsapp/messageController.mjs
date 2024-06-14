@@ -29,7 +29,7 @@ const RESPONSE_MESSAGES = {
   WELCOME_LINK:
     "Hello! 👋 Welcome to Whatnot! To get started, please sign up here: https://whatnotapp.xyz/signup. We're excited to have you on board!",
   DEFAULT:
-    "Sorry, we currently only support text, image, document, audio, and video messages. If you haven't signed up to WhatNot App yet, you can do so here: https://whatnotapp.vercel.app/signup.",
+    "Sorry, we currently only support text, image, document, audio, and video messages. If you haven't signed up to WhatNot yet, you can do so here: https://whatnotapp.vercel.app/signup.",
   REMINDER_CONFIRMATION: (reminderTime) =>
     `Reminder set! A message will be sent to you before ${reminderTime}.`,
 };
@@ -96,10 +96,7 @@ async function handleTextMessage(message) {
       await initializeDocsService(fromPhoneNumber); // Initialize Google Docs service
 
       // Write the message to a Google Docs document
-      const docsResposne = await writeMessageToDocs(
-        text,
-        timestamp
-      );
+      const docsResposne = await writeMessageToDocs(text, timestamp);
       if (docsResposne === 200) {
         // If writing to Docs is successful, send a confirmation message
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
@@ -127,6 +124,7 @@ async function handleMediaMessage(message) {
 
     // Handle media upload to Google Drive
     const mediaUploadResponse = await handleWhatsAppMediaUpload(
+      fromPhoneNumber,
       mediaObject,
       mediaType,
       mediaType === "document" ? message.document.filename : undefined

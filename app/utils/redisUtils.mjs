@@ -19,4 +19,16 @@ async function getAccessToken(phoneNumber) {
   return accessToken;
 }
 
-export { setAccessToken, getAccessToken };
+async function setParentFolderId(phoneNumber, parentFolderId) {
+  const key = `parentFolderId:${phoneNumber}`;
+
+  await redis.set(key, parentFolderId);
+}
+
+async function getParentFolderId(phoneNumber) {
+  const key = `parentFolderId:${phoneNumber}`;
+
+  const parentFolderId = await redis.get(key);
+}
+
+export { setAccessToken, getAccessToken, setParentFolderId, getParentFolderId };

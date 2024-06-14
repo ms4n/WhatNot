@@ -8,6 +8,10 @@ const WHATSAPP_API_ACCESS_TOKEN = process.env.WHATSAPP_API_ACCESS_TOKEN;
 const parentFolderName = "WhatNot";
 
 import { getDriveService } from "../../../config/googleApiConfig.mjs";
+import {
+  getParentFolderId,
+  setParentFolderId,
+} from "../../utils/redisUtils.mjs";
 
 let driveService;
 async function initializeDriveService(phoneNumber) {
@@ -133,6 +137,7 @@ async function findOrCreateFile(fileMetadata, parentFolderId = undefined) {
 }
 
 async function handleWhatsAppMediaUpload(
+  phoneNumber,
   mediaObject,
   mediaType,
   fileName = undefined
@@ -164,7 +169,12 @@ async function handleWhatsAppMediaUpload(
     const subFolderName = `${mediaType} files`;
 
     // Find or create parent folder and subfolder
-    const parentFolderId = await findOrCreateFolder(parentFolderName);
+    let parentFolderId = await getParentFolderId(phoneNumber);
+
+    if (!parentFolderId) {
+      parentFolderId = await findOrCreateFolder(parentFolderName);
+      await setParentFolderId(phoneNumber, parentFolderId);
+    }
     const subFolderId = await findOrCreateFolder(subFolderName, parentFolderId);
 
     // Prepare metadata for the file
@@ -200,7 +210,3 @@ export {
   findOrCreateFile,
   handleWhatsAppMediaUpload,
 };
-
-//Link example
-// 1QL01r6djoIRia2gUj6ZxYHPks_w1WNJl
-// https://drive.google.com/file/d/1QL01r6djoIRia2gUj6ZxYHPks_w1WNJl/view?usp=drive_link
