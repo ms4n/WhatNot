@@ -12,6 +12,7 @@ async function generateReminderAndSave(fromPhoneNumber, message) {
   try {
     const now = DateTime.now().setZone("Asia/Calcutta");
     const currentDateTimeISO = now.toISO();
+    const currentDateISO = now.toISODate();
     const dayOfWeek = now.toLocaleString(DateTime.DATE_HUGE);
 
     const prompt = `
@@ -20,11 +21,15 @@ async function generateReminderAndSave(fromPhoneNumber, message) {
 
       User Message: ${message}
 
-      Instructions: Given a message that starts with "/rem", extract the reminder text (what the reminder is about) and the reminder time (when the reminder should be sent). The reminder time should be converted to an ISO 8601 string format.
+      Instructions: 
+      
+      1. Given a message that starts with "/rem", extract the reminder text (what the reminder is about) and the reminder time (when the reminder should be sent). The reminder time should be converted to an ISO 8601 string format.
 
-      * Do not format the result as JSON, just output string, strictly avoid trailing comma."
+      2. Do not format the result as JSON, just output string, strictly avoid trailing comma.
 
-      The output should be in JSON format as follows:
+      3. If the date is not mentioned explicitly, consider it ${currentDateISO}, and if today's time has passed compared to the reminder's time, set it to tomorrow. Always ensure the reminder date is in the future.
+
+      4. The output should be in JSON format as follows:
 
       { 
         "reminder_text": "",
@@ -32,8 +37,6 @@ async function generateReminderAndSave(fromPhoneNumber, message) {
       }
 
       If the time is not explicitly specified, return a default reminder time of 24 hours from now.
-
-      If the date is not mentioned explicitly, consider it today, and if today's time has passed compared to the reminder's time, set it to tomorrow. Always ensure the reminder date is in the future.
     `;
 
     const geminiResult = await gemini.generateContent(prompt);
@@ -78,7 +81,7 @@ async function checkRemindersAndSend() {
       );
 
       if (!reminders || reminders.length === 0) {
-        console.log("No reminders found for the next 3 minutes.");
+        console.log("No reminders found for the next 2 minutes.");
         return; // Exit early if there are no reminders
       }
 
@@ -90,10 +93,7 @@ async function checkRemindersAndSend() {
         await updateReminderStatus(reminder.id, "sent");
       }
     } catch (error) {
-      console.error(
-        "Error in check reminders and send cron job:",
-        error.message
-      );
+      console.error("Error in checkRemindersAndSend cron job:", error.message);
     }
   });
 }
