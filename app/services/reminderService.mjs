@@ -40,7 +40,7 @@ async function generateReminderAndSave(fromPhoneNumber, message) {
     `;
 
     const geminiResult = await gemini.generateContent(prompt);
-    const geminiResponseText = await geminiResult.response.text();
+    const geminiResponseText = geminiResult.response.text();
 
     const reminderJsonObject = JSON.parse(geminiResponseText);
 

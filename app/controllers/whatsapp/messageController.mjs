@@ -80,9 +80,9 @@ async function handleTextMessage(message) {
         text
       );
       if (reminderResponse.statusCode === 200) {
-        const reminderTime = DateTime.fromISO(
-          reminderResponse.reminderTime
-        ).toLocaleString(DateTime.DATETIME_MED);
+        const reminderTime = DateTime.fromISO(reminderResponse.reminderTime, {
+          zone: "Asia/Kolkata",
+        }).toLocaleString(DateTime.DATETIME_MED);
 
         await sendReactionMessage(fromPhoneNumber, messageId, "✅");
         await sendTextMessage(
